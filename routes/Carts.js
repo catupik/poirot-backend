@@ -34,7 +34,7 @@ router.post('/cart/create', async (req, res) => {
             return res.status(200).json({ message: 'User has a cart' })
         }
 
-        // Передаем пустой массив items при создании новой корзины
+        // empty ITEMS at creating a new user
         const newCart = new Cart({ userId, items: [] });
         await newCart.save();
         console.log('Cart created successfully');
@@ -97,7 +97,7 @@ router.post('/cart/delete/:userId/:itemId', async (req, res) => {
         const index = cart.items.findIndex((item) => item.itemId === Number(itemId));
 
         if (index > -1) {
-            // Переносим код удаления в отдельную функцию
+            
             await removeItemFromCart(cart, index);
             console.log('Item deleted successfully');
             return res.status(200).json({ message: 'Item deleted successfully' });
@@ -112,7 +112,7 @@ router.post('/cart/delete/:userId/:itemId', async (req, res) => {
 });
 
 
-// Функция для удаления товара из корзины
+// delete item from cart
 async function removeItemFromCart(cart, index) {
     cart.items.splice(index, 1);
     await cart.save();
