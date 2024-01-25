@@ -81,6 +81,40 @@ router.post("/cart/add", async (req, res) => {
   }
 });
 
+
+// UPDATE QUANTITY 
+router.post('/cart/update-quantity', async (req, res) => {
+  try {
+    const { userId, itemId, newQuantity} = req.body;
+
+    if(!userId || !itemId || newQuantity === undefined){
+      return res.status(400).json({
+        error: "Bad request, missing required fields"
+      });
+    }
+
+    const cart = await Cart.findOne({ userId })
+    if(!cart ){
+      return res.status(404).json({ error: "Cart not found" });
+    }
+
+    const item = cart.items.find(item => item.itemId === itemId);
+    if (!item) {
+      return res.status(404).json({ error: "Item not found in cart" });
+  }
+  item.quantity = newQuantity;
+  item.totalPrice = item.pricePerItem * newQuantity;
+  await cart.save();
+  res.status(200).json({ message: "Quantity updated successfully" });
+} catch (err) {
+  console.error("Error updating item quantity in cart:", err);
+  res.status(500).json({
+      error: "Internal server error",
+  });
+}
+})
+
+
 // DELETE ITEM FROM CART
 router.post('/cart/delete/:userId/:itemId', async (req, res) => {
     try {
