@@ -70,7 +70,7 @@ router.post("/cart/add", async (req, res) => {
       cart.items[index].quantity += quantity;
       cart.items[index].totalPrice += totalPrice;
     } else {
-      cart.items.push({ itemId, quantity, totalPrice });
+      cart.items.push({ itemId, quantity, totalPrice, pricePerItem });
     }
     await cart.save();
     res.status(200).json({ message: "Item added successfully" });
