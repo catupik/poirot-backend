@@ -6,6 +6,7 @@ const CartItemSchema = new mongoose.Schema({
   itemId: Number,
   quantity: Number,
   totalPrice: Number,
+  pricePerItem: Number
 });
 
 const cartSchema = new mongoose.Schema({
@@ -51,7 +52,7 @@ router.post('/cart/create', async (req, res) => {
 // POST - Add item to cart
 router.post("/cart/add", async (req, res) => {
   try {
-    const { userId, itemId, quantity, totalPrice } = req.body;
+    const { userId, itemId, quantity, totalPrice, pricePerItem } = req.body;
 
     if (!userId || !itemId || !quantity || !totalPrice) {
       return res.status(400).json({
