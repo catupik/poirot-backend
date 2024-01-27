@@ -25,7 +25,7 @@ router.post('/cart/create', async (req, res) => {
 
         if (!userId) {
             return res.status(400).json({
-                error: 'user doesnt exist'
+                error: 'User doesnt exist'
             });
         }
 

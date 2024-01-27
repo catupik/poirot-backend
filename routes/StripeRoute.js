@@ -9,7 +9,7 @@ router.use(bodyParser.json());
 router.use(cors());
 
 
-router.post("/charge", cors(), async (req, res) => {
+router.post("/stripe/charge", cors(), async (req, res) => {
     let { amount, id } = req.body;
     try {
       const payment = await stripe.paymentIntents.create({

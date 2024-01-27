@@ -19,7 +19,7 @@ router.get("/getmessages", async (req, res) => {
     res.json(messages);
   } catch (err) {
     console.error(err);
-    res.status(500).send("Ошибка сервера");
+    res.status(500).send("Server error");
   }
 });
 // POST
@@ -36,11 +36,11 @@ router.post("/sendmessage", async (req, res) => {
     const savedData = await newMessage.save();
     console.log("Saved message:", savedData);
 
-    res.status(200).send("Форма сохранена");
+    res.status(200).send("Form saved");
   } catch {
     (err) => {
       console.log(err);
-      res.status(500).send("Ошибка сервера");
+      res.status(500).send("Server error");
     };
   }
 });
@@ -49,10 +49,10 @@ router.post("/deletemessage", async (req, res) => {
   try {
     const { _id } = req.body;
     await Message.findByIdAndDelete(_id);
-    res.send("Сообщение удалено");
+    res.send("Message deleted");
   } catch (err) {
     console.error(err);
-    res.status(500).send("Ошибка сервера");
+    res.status(500).send("Server error");
   }
 });
 
