@@ -9,6 +9,7 @@ const CartItemSchema = new mongoose.Schema({
   pricePerItem: Number
 });
 
+
 const cartSchema = new mongoose.Schema({
   userId: String,
   items: [CartItemSchema],
@@ -16,6 +17,20 @@ const cartSchema = new mongoose.Schema({
 
 const Cart = mongoose.model("Cart", cartSchema);
 
+
+// purchase
+const purchaseHistorySchema = new mongoose.Schema({
+  userId: String,
+  purchases: [{
+    purchases: [CartItemSchema],
+    purchaseDate: {
+      type: Date,
+      default: Date.now
+    }
+  }]
+})
+
+const PurchaseHistory = mongoose.model("PurchaseHistory", purchaseHistorySchema)
 
 // POST create new user 
 router.post('/cart/create', async (req, res) => {
@@ -183,5 +198,60 @@ router.get("/cart/:userId", async (req, res) => {
     }
   });
   
+
+  // POST create purchase
+
+  router.post('/purchase/:userId', async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const cart = await Cart.findOne({ userId });
+  
+      if (!cart || cart.items.length === 0) {
+        return res.status(400).json({ error: "Cart is empty" });
+      }
+  
+      const purchaseHistory = await PurchaseHistory.findOne({ userId }) || new PurchaseHistory({ userId, purchases: [] });
+      purchaseHistory.purchases.push({
+        items: [...cart.items],
+        purchaseDate: new Date()
+      });
+  
+      await purchaseHistory.save();
+  
+      //clear the cart
+      cart.items = [];
+      await cart.save();
+  
+      res.status(200).json({ message: "Purchase completed" });
+    } catch (err) {
+      console.error("Error processing purchase:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // GET purchase history
+
+  router.get('/purchase-history/:userId', async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      console.log("Received request for user's purchase history:", userId);
+
+      const history = await PurchaseHistory.findOne({ userId });
+      if (!history) {
+          console.log('Purchase history not found for user:', userId);
+          return res.status(404).json({ error: 'Purchase history not found' });
+      }
+
+      console.log("Found purchase history for user:", userId, history);
+      res.json(history.purchases);
+  } catch (err) {
+      console.error("Error retrieving purchase history:", err);
+      res.status(500).json({ error: "Internal server error" });
+  }
+
+
+  })
+
+
 
 module.exports = router;
