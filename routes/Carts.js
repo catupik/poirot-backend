@@ -22,7 +22,7 @@ const Cart = mongoose.model("Cart", cartSchema);
 const purchaseHistorySchema = new mongoose.Schema({
   userId: String,
   purchases: [{
-    purchases: [CartItemSchema],
+    items: [CartItemSchema],
     purchaseDate: {
       type: Date,
       default: Date.now
