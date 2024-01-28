@@ -204,22 +204,23 @@ router.get("/cart/:userId", async (req, res) => {
   router.post('/purchase/:userId', async (req, res) => {
     try {
       const { userId } = req.params;
-      const {cartItems} = req.body;
+      const cart = await Cart.findOne({ userId });
   
-      if (!cartItems || cartItems.length === 0) {
+      if (!cart || cart.items.length === 0) {
         return res.status(400).json({ error: "Cart is empty" });
       }
   
       const purchaseHistory = await PurchaseHistory.findOne({ userId }) || new PurchaseHistory({ userId, purchases: [] });
       purchaseHistory.purchases.push({
-        items: cartItems,
+        items: [...cart.items],
         purchaseDate: new Date()
       });
   
       await purchaseHistory.save();
   
       //clear the cart
-      await Cart.findOneAndUpdate({ userId }, { $set: { items: [] }});
+      cart.items = [];
+      await cart.save();
   
       res.status(200).json({ message: "Purchase completed" });
     } catch (err) {
